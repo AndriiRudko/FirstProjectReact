@@ -17,7 +17,9 @@ class App extends Component {
         { name: "Alex M.", salary: 3000, increase: true, rise: false, id: 2 },
         { name: "Carl W.", salary: 5000, increase: false, rise: false, id: 3 },
       ],
+      searchInput: "",
     };
+
     this.maxId = 4;
   }
 
@@ -52,26 +54,51 @@ class App extends Component {
           return { ...item, [prop]: !item[prop] };
         }
         return item;
-      })
+      }),
     }));
   };
 
+  findMatches = (wordToMatch, arrayOfWords) =>
+    arrayOfWords.filter(({ name }) => {
+      const regex = new RegExp(wordToMatch, "gi");
+      return name.match(regex);
+    });
+
+  onSearchInput = (e) => {
+    const { value } = e.target;
+
+    this.setState({ searchInput: value });
+    const newData = this.findMatches(value, this.state.data);
+
+    if (newData.length > 0) {
+      this.setState({
+        newData: newData,
+      });
+    }
+  };
+
   render() {
+    const { data, searchInput, newData } = this.state;
 
-    const employees = this.state.data.length;
-    const increased = this.state.data.filter(item => item.increase).length;
-
+    const employees = data.length;
+    const increased = data.filter((item) => item.increase).length;
+    const dynamicData = searchInput.length === 0 ? data : newData;
 
     return (
       <div className="app">
-        <AppInfo employees={employees} increased={increased}/>
+        <AppInfo employees={employees} increased={increased} />
 
         <div className="search-panel">
-          <SearchPanel />
+          <SearchPanel
+            employees={data}
+            onSearch={this.onSearch}
+            searchInput={searchInput}
+            onSearchInput={this.onSearchInput}
+          />
           <AppFilter />
         </div>
         <EmployeesList
-          data={this.state.data}
+          data={dynamicData}
           onDelete={this.deleteItem}
           onToggleProp={this.onToggleProp}
         />
