@@ -12,11 +12,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: [
-        { name: "John C.", salary: 800, increase: false, rise: true, id: 1 },
-        { name: "Alex M.", salary: 3000, increase: true, rise: false, id: 2 },
-        { name: "Carl W.", salary: 5000, increase: false, rise: false, id: 3 },
-      ],
+      data: [],
       searchInput: "",
     };
 
@@ -37,8 +33,12 @@ class App extends Component {
       salary,
       increase: false,
       rise: false,
-      id: this.maxId++,
+      id: this.state.data.length + 1,
     };
+
+    const dataForLocalStorage = JSON.stringify([...this.state.data, newItem]);
+
+    localStorage.setItem("FirstProjectData", dataForLocalStorage);
     this.setState(({ data }) => {
       const newArr = [...data, newItem];
       return {
@@ -76,6 +76,13 @@ class App extends Component {
       });
     }
   };
+
+  componentDidMount() {
+    const storedData = localStorage.getItem("FirstProjectData");
+    if (storedData) {
+      this.setState({ data: JSON.parse(storedData) });
+    }
+  }
 
   render() {
     const { data, searchInput, newData } = this.state;
