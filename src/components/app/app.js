@@ -47,6 +47,26 @@ class App extends Component {
     });
   };
 
+  editItem = (e, id) => {
+    const { data } = this.state;
+    const newData = data.map((item) => {
+      if (item.id === id) {
+        return {
+          ...item,
+          salary: Number(e.target.value.replace("$", "")),
+        };
+      }
+      return item;
+    });
+
+    const dataForLocalStorage = JSON.stringify(newData);
+    localStorage.setItem("FirstProjectData", dataForLocalStorage);
+
+    this.setState({
+      data: newData,
+    });
+  };
+
   onToggleProp = (id, prop) => {
     this.setState(({ data }) => ({
       data: data.map((item) => {
@@ -105,6 +125,7 @@ class App extends Component {
           <AppFilter />
         </div>
         <EmployeesList
+          editItem={this.editItem}
           data={dynamicData}
           onDelete={this.deleteItem}
           onToggleProp={this.onToggleProp}
